@@ -1,0 +1,21 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "Microsoft.AspNetCore": "Information",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Information"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=taskmanagerai;Username=postgres;Password=YOUR_DB_PASSWORD_HERE"
+  },
+  "JwtSettings": {
+    "SecretKey": "YOUR_JWT_SECRET_KEY_MIN_32_CHARS_HERE",
+    "Issuer": "TaskManagerAI",
+    "Audience": "TaskManagerAI",
+    "ExpiryMinutes": 60
+  },
+  "AnthropicSettings": {
+    "ApiKey": "YOUR_ANTHROPIC_API_KEY_HERE"
+  }
+}

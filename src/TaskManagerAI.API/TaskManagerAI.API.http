@@ -1,0 +1,6 @@
+@TaskManagerAI.API_HostAddress = http://localhost:5202
+
+GET {{TaskManagerAI.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

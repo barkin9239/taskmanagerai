@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SignalR TaskHub Test Client</title>
+  <style>
+    body { font-family: monospace; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    textarea { width: 100%; height: 80px; margin: 8px 0; }
+    button { padding: 8px 16px; margin: 4px; cursor: pointer; }
+    #log { background: #1e1e1e; color: #d4d4d4; padding: 16px; height: 300px;
+           overflow-y: auto; border-radius: 4px; white-space: pre-wrap; }
+    .status { padding: 4px 8px; border-radius: 3px; display: inline-block; }
+    .connected { background: #2d6a2d; color: #90ee90; }
+    .disconnected { background: #6a2d2d; color: #ff9090; }
+  </style>
+</head>
+<body>
+  <h2>TaskManagerAI — SignalR Hub Test</h2>
+  <p>
+    <strong>Hub URL:</strong> <code>http://localhost:5202/hubs/tasks</code><br/>
+    <strong>Event:</strong> <code>TaskAssigned</code>
+  </p>
+  <p style="background:#fff3cd;padding:10px;border-radius:4px;border:1px solid #ffc107">
+    ⚠️ <strong>file:// vs HTTP server:</strong> Bu sayfayı doğrudan <code>file://</code>
+    ile açmak CORS sorununa neden olabilir (bazı tarayıcılarda).<br/>
+    En güvenilir yöntem: terminalde <code>docs/</code> klasöründen bir local sunucu başlatmak:<br/>
+    <code>cd docs &amp;&amp; python -m http.server 8080</code> → <code>http://localhost:8080/signalr-test.html</code><br/>
+    Ya da VS Code'da bu dosyayı açıp <em>Go Live</em> (Live Server extension) kullanabilirsin.
+  </p>
+
+  <label><strong>JWT Token</strong> (from POST /api/auth/login)</label><br/>
+  <textarea id="token" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+
+  <div>
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <span id="status" class="status disconnected">Disconnected</span>
+  </div>
+
+  <h3>Events</h3>
+  <div id="log">-- Waiting for connection --</div>
+  <button onclick="clearLog()">Clear</button>
+
+  <!-- SignalR client from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+  <script>
+    let connection = null;
+
+    function log(msg, color) {
+      const el = document.getElementById('log');
+      const time = new Date().toLocaleTimeString();
+      const line = `[${time}] ${msg}`;
+      el.textContent += '\n' + line;
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function setStatus(connected) {
+      const el = document.getElementById('status');
+      el.textContent = connected ? 'Connected' : 'Disconnected';
+      el.className = 'status ' + (connected ? 'connected' : 'disconnected');
+    }
+
+    async function connect() {
+      const token = document.getElementById('token').value.trim();
+      if (!token) { alert('Paste a JWT token first.'); return; }
+
+      connection = new signalR.HubConnectionBuilder()
+        .withUrl('http://localhost:5202/hubs/tasks', {
+          // Token is sent via query string because WebSocket can't set headers
+          accessTokenFactory: () => token
+        })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+      // Listen for TaskAssigned events
+      connection.on('TaskAssigned', (payload) => {
+        log('📬 TaskAssigned: ' + JSON.stringify(payload, null, 2));
+      });
+
+      connection.onclose(() => {
+        setStatus(false);
+        log('Connection closed.');
+      });
+
+      connection.onreconnecting(() => log('Reconnecting...'));
+      connection.onreconnected(() => log('Reconnected!'));
+
+      try {
+        await connection.start();
+        setStatus(true);
+        log('Connected! Connection ID: ' + connection.connectionId);
+        log('Listening for TaskAssigned events...');
+      } catch (err) {
+        log('ERROR: ' + err.message);
+      }
+    }
+
+    async function disconnect() {
+      if (connection) {
+        await connection.stop();
+        setStatus(false);
+      }
+    }
+
+    function clearLog() {
+      document.getElementById('log').textContent = '';
+    }
+  </script>
+
+  <hr/>
+  <h3>Test Flow</h3>
+  <ol>
+    <li>Register two users via <code>POST /api/auth/register</code></li>
+    <li>Login as <strong>User B</strong>, copy the token, paste it above and click <strong>Connect</strong></li>
+    <li>Login as <strong>User A</strong> via Swagger, create a task</li>
+    <li>As User A, call <code>POST /api/tasks/{id}/assign</code> with User B's ID</li>
+    <li>Watch the <em>TaskAssigned</em> event appear in the log above in real-time</li>
+  </ol>
+</body>
+</html>

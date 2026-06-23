@@ -1,0 +1,77 @@
+# ============================================================
+# .NET / ASP.NET Core
+# ============================================================
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+TestResults/
+*.log
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Rider / ReSharper
+.idea/
+*.DotSettings.user
+_ReSharper*/
+*.ReSharper
+
+# ============================================================
+# Environment & secrets — NEVER commit these
+# ============================================================
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.Production.json
+**/*.pfx
+**/*.p12
+*.pfx
+*.p12
+secrets.json
+
+# ============================================================
+# Node / React / Vite
+# ============================================================
+client/node_modules/
+client/dist/
+client/.env
+client/.env.local
+client/.env.*.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
+
+# Vite build outputs
+client/.vite/
+client/coverage/
+
+# package-lock is committed intentionally — remove if unwanted
+# client/package-lock.json
+
+# ============================================================
+# OS & editor
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VSCode (remove this block if you want to share workspace settings)
+.vscode/*
+!.vscode/extensions.json
+
+# ============================================================
+# Docker
+# ============================================================
+# Keep docker-compose.yml committed — passwords are dev-only
+# but ignore any local overrides
+docker-compose.override.yml
+docker-compose.local.yml
