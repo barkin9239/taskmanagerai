@@ -95,11 +95,35 @@ Key patterns used:
 
 ## Screenshots
 
+### Login Screen
+
+![Login Screen](docs/screenshots/login.png)
+
+Secure authentication with email and password. New users can register directly from the login page.
+
+### Kanban Dashboard
+
 ![Dashboard](docs/screenshots/dashboard.png)
+
+Three-column Kanban board with drag-and-drop support. Switch between "Created by Me" and "Assigned to Me" views using the tab bar.
+
+### Task Creation
+
+![Task Creation](docs/screenshots/task-creation.png)
+
+Create tasks with title, description, priority, due date, and an optional assignee selected via typeahead search.
+
+### AI-Powered Task Analysis
 
 ![AI Analysis](docs/screenshots/ai-analysis.png)
 
-![Real-time Notification](docs/screenshots/realtime.png)
+Claude AI analyzes a task's title and description, then returns a suggested priority level, a list of actionable subtasks, and a brief reasoning summary.
+
+### Empty Board State
+
+![Empty Board](docs/screenshots/empty-board.png)
+
+Clean empty state shown when a view has no tasks yet.
 
 ---
 
